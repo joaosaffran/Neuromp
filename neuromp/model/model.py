@@ -84,22 +84,23 @@ if __name__ == "__main__":
     for e in range(EPISODES):
         state = env.reset()
         state = np.reshape(state, [1, state_size])
-        for time in range(500):
-            env.render()
+        r_sum = 0.0
+        for time in range(50):
+            #env.render()
             action = agent.act(state)
             next_state, reward, done = env.step(action)
             reward = reward if not done else -10
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state
-
-            if time % 10 == 0:
-                print(reward)
+            r_sum += reward
 
             if done:
-                print("episode: {}/{}, score: {}, e: {:.2}"
-                      .format(e, EPISODES, time, agent.epsilon))
                 break
+
+        print("episode: {}/{}, score: {}, e: {:.2} max speedup: {:.4}"
+            .format(e, EPISODES, r_sum, agent.epsilon, env.max_speed_up))
+
         if len(agent.memory) > batch_size:
             agent.replay(batch_size)
         # if e % 10 == 0:
