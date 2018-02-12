@@ -53,6 +53,14 @@ class QNet(object):
                                                      simple_value=value)])
         self.writer.add_summary(summary, step)
 
+    def log_string(self, tag, value, step):
+        text_tensor = tf.make_tensor_proto(value, dtype=tf.string)
+        meta = tf.SummaryMetadata()
+        meta.plugin_data.plugin_name = "text"
+        summary = tf.Summary()
+        summary.value.add(tag=tag, metadata=meta, tensor=text_tensor)
+        self.writer.add_summary(summary, step)
+
     def load(self, name):
         self.model.load_weights(name)
 
@@ -116,6 +124,7 @@ if __name__ == "__main__":
         agent.log_scalar("ep_max_speedup", max(step_speedups), e)
         agent.log_scalar("global_max_speedup", env.max_speed_up, e)
         agent.log_scalar("epsilon", agent.epsilon, e)
+        agent.log_string("best_pragma", env.best_pragma, e)
         agent.writer.flush()
 
         print("episode: {}/{}, score: {}, e: {:.2} max speedup: {:.4}"
