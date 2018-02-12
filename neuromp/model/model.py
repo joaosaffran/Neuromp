@@ -10,7 +10,7 @@ import random
 
 from neuromp.preprocessing.code import Code
 
-EPISODES = 1000
+EPISODES = 500
 
 LOGS_DIR="./logs"
 
