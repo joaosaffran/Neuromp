@@ -4,12 +4,15 @@ from keras.layers import Dense
 from keras.layers import Embedding
 from keras.layers import Conv1D, GlobalMaxPooling1D
 from keras.optimizers import Adam
+import tensorflow as tf
 import numpy as np
 import random
 
 from neuromp.preprocessing.code import Code
 
 EPISODES = 1000
+
+LOGS_DIR="./logs"
 
 class QNet(object):
     def __init__(self, state_size, actions_size, max_features=5000, hidden_dims=256,
@@ -43,6 +46,13 @@ class QNet(object):
         self.model.compile(loss='mse',
             optimizer=Adam(lr=self.learning_rate))
 
+        self.writer = tf.summary.FileWriter(LOGS_DIR, graph=tf.get_default_graph())
+
+    def log_scalar(self, tag, value, step):
+        summary = tf.Summary(value=[tf.Summary.Value(tag=tag,
+                                                     simple_value=value)])
+        self.writer.add_summary(summary, step)
+
     def load(self, name):
         self.model.load_weights(name)
 
@@ -71,7 +81,6 @@ class QNet(object):
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
-
 if __name__ == "__main__":
     env = Code('../data/pi.c')
     state_size = env.getInput().shape[0]
@@ -85,11 +94,13 @@ if __name__ == "__main__":
         state = env.reset()
         state = np.reshape(state, [1, state_size])
         r_sum = 0.0
+        step_speedups = []
         for time in range(50):
             #env.render()
             action = agent.act(state)
             next_state, reward, done = env.step(action)
             reward = reward if not done else -10
+            step_speedups.append(reward)
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state
@@ -98,10 +109,17 @@ if __name__ == "__main__":
             if done:
                 break
 
+        if len(agent.memory) > batch_size:
+            agent.replay(batch_size)
+
+        agent.log_scalar("reward", r_sum, e)
+        agent.log_scalar("ep_max_speedup", max(step_speedups), e)
+        agent.log_scalar("global_max_speedup", env.max_speed_up, e)
+        agent.log_scalar("epsilon", agent.epsilon, e)
+        agent.writer.flush()
+
         print("episode: {}/{}, score: {}, e: {:.2} max speedup: {:.4}"
             .format(e, EPISODES, r_sum, agent.epsilon, env.max_speed_up))
 
-        if len(agent.memory) > batch_size:
-            agent.replay(batch_size)
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
