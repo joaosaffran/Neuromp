@@ -1,10 +1,16 @@
 from sacred import Experiment
 from sacred.stflow import LogFileWriter
+from sacred.observers import MongoObserver
+
 from neuromp.preprocessing.code import Code
 from neuromp.model.model import QNet
 import numpy as np
 import tensorflow as tf
+
 ex = Experiment('Running Pi')
+ex.observers.append(MongoObserver.create(
+    url='mongodb://joaosaffran:saffran96@ds247648.mlab.com:47648/joaosaffran_tcc',
+    db_name='joaosaffran_tcc'))
 
 @ex.config
 def config():
