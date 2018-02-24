@@ -86,3 +86,5 @@ def main(_log, _run, code, episodes, max_features, hidden_dims,
 
         if e % 10 == 0:
             agent.save("./save/cartpole-dqn.h5")
+
+    return env.best_pragma, env.max_speed_up
