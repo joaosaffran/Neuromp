@@ -7,25 +7,27 @@ from keras.optimizers import Adam
 import tensorflow as tf
 import numpy as np
 import random
-
+from sacred import Experiment
+from sacred.stflow import LogFileWriter
 from neuromp.preprocessing.code import Code
 
-EPISODES = 500
-
-LOGS_DIR="./logs"
+ex = Experiment('Running Pi')
 
 class QNet(object):
     def __init__(self, state_size, actions_size, max_features=5000, hidden_dims=256,
-                  embedding_dim=50, max_length=20, filters=256, kernel_size=3):
+                  embedding_dim=50, max_length=20, filters=256, kernel_size=3,
+                  gamma=0.95, epsilon=1.0, epsilon_min=0.01, epsilon_decay=0.995, learning_rate=0.0001,
+                  log_dir='./logs'):
 
+        self.log_dir = log_dir
         self.state_size = state_size
-        self.action_size = action_size
+        self.action_size = actions_size
         self.memory = deque(maxlen=100)
-        self.gamma = 0.95    # discount rate
-        self.epsilon = 1.0  # exploration rate
-        self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
-        self.learning_rate = 0.001
+        self.gamma = gamma    # discount rate
+        self.epsilon = epsilon  # exploration rate
+        self.epsilon_min = epsilon_min
+        self.epsilon_decay = epsilon_decay
+        self.learning_rate = learning_rate
 
         self.model = Sequential()
         self.model.add(Embedding(max_features,
@@ -46,7 +48,7 @@ class QNet(object):
         self.model.compile(loss='mse',
             optimizer=Adam(lr=self.learning_rate))
 
-        self.writer = tf.summary.FileWriter(LOGS_DIR, graph=tf.get_default_graph())
+        self.writer = tf.summary.FileWriter(self.log_dir, graph=tf.get_default_graph())
 
     def log_scalar(self, tag, value, step):
         summary = tf.Summary(value=[tf.Summary.Value(tag=tag,
@@ -89,16 +91,47 @@ class QNet(object):
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
-if __name__ == "__main__":
-    env = Code('../data/pi.c')
+@ex.config
+def config():
+    episodes = 500
+    log_dir = "./logs"
+    max_features=1000
+    hidden_dims=256
+    embedding_dim=50
+    max_length=20
+    filters=256
+    kernel_size=3
+    gamma = 0.95
+    epsilon = 1.0
+    epsilon_min = 0.01
+    epsilon_decay = 0.995
+    learning_rate = 0.001
+    code = '../data/pi.c'
+
+@ex.automain
+@LogFileWriter(ex)
+def main(_log, _run, code, episodes, max_features, hidden_dims,
+        embedding_dim, max_length, filters,kernel_size, gamma,
+        epsilon, epsilon_min, epsilon_decay, learning_rate,
+        log_dir):
+
+    _log.info("Starting ENV...")
+    env = Code(code)
+    _log.info("Config Agent")
     state_size = env.getInput().shape[0]
     action_size = np.shape(env.actions)[0]
-    agent = QNet(state_size, action_size)
+    agent = QNet(state_size, action_size, max_features,
+            hidden_dims, embedding_dim, max_length, filters,
+            kernel_size, gamma, epsilon, epsilon_min,
+            epsilon_decay, learning_rate)
+
     # agent.load("./save/cartpole-dqn.h5")
     done = False
     batch_size = 32
+    _log.info("Starting Experiment")
+    tf.summary.FileWriter(log_dir, graph=tf.get_default_graph())
 
-    for e in range(EPISODES):
+    for e in range(episodes):
         state = env.reset()
         state = np.reshape(state, [1, state_size])
         r_sum = 0.0
@@ -120,15 +153,15 @@ if __name__ == "__main__":
         if len(agent.memory) > batch_size:
             agent.replay(batch_size)
 
-        agent.log_scalar("reward", r_sum, e)
-        agent.log_scalar("ep_max_speedup", max(step_speedups), e)
-        agent.log_scalar("global_max_speedup", env.max_speed_up, e)
-        agent.log_scalar("epsilon", agent.epsilon, e)
-        agent.log_string("best_pragma", env.best_pragma, e)
-        agent.writer.flush()
+        _run.log_scalar("training.reward", r_sum, e)
+        _run.log_scalar("training.ep_max_reward", max(step_speedups), e)
+        _run.log_scalar("training.global_max_speedup", env.max_speed_up, e)
+        _run.log_scalar("training.epsilon", agent.epsilon, e)
+        #_run.log_scalar("best_pragma", env.best_pragma, e)
+        #agent.writer.flush()
 
-        print("episode: {}/{}, score: {}, e: {:.2} max speedup: {:.4}"
-            .format(e, EPISODES, r_sum, agent.epsilon, env.max_speed_up))
+        _log.info("episode: {}/{}, score: {}, e: {:.2} max speedup: {:.4}"
+            .format(e, episodes, r_sum, agent.epsilon, env.max_speed_up))
 
-        # if e % 10 == 0:
-        #     agent.save("./save/cartpole-dqn.h5")
+        if e % 10 == 0:
+            agent.save("./save/cartpole-dqn.h5")

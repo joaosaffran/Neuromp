@@ -20,6 +20,8 @@ class Code(object):
         self.for_pos = self.ast.fors[0]
         self.pragmas = self._initPragmas()
 
+        self.best_pragma = self._builtPragma()
+
         self.seq_time = None
         self.seq_output = None
 
@@ -85,7 +87,7 @@ class Code(object):
         tmp_lines.insert(self.for_pos - 1, self._builtPragma())
 
         with open("tmp_par.c", "w") as f:
-            for l in self.lines:
+            for l in tmp_lines:
                 f.write(l + "\n")
 
         try:
@@ -143,6 +145,7 @@ class Code(object):
 
         if done:
             self.max_speed_up = reward
+            self.best_pragma = self._builtPragma()
 
         return next_state, reward, done
 
