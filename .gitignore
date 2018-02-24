@@ -1,3 +1,4 @@
 *.png
 tmp_*
 neuromp/*/logs
+neuromp/model/__pycache__/

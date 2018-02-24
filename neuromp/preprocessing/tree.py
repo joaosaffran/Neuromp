@@ -98,7 +98,7 @@ class AST(object):
                 print(")", end='')
             else:
                 print(n.value[0], end='')
-    
+
     def preproStatement(self, stmt):
         global MIN_ID_FOR_VARS
         resp = []
@@ -119,13 +119,13 @@ class AST(object):
             else:
                 resp.append(stmt.token.value)
         return resp
-        
+
 
     def parse(self, f):
         statements = []
         ast = parse_file(f, use_cpp=True,
                             cpp_path='clang',
-                            cpp_args=['-E', r'-I../utils/fake_libc_include'])
+                            cpp_args=['-E', r'-I../../utils/fake_libc_include'])
 
         for n in ast.ext:
             if isinstance(n, c_ast.FuncDef):
