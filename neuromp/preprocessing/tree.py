@@ -125,7 +125,7 @@ class AST(object):
         statements = []
         ast = parse_file(f, use_cpp=True,
                             cpp_path='clang',
-                            cpp_args=['-E', r'-I../../utils/fake_libc_include'])
+                            cpp_args=['-E', r'-I../utils/fake_libc_include'])
 
         for n in ast.ext:
             if isinstance(n, c_ast.FuncDef):
