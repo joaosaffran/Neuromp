@@ -9,7 +9,9 @@ class Token(Enum):
     OP = 3
     BINOP = 4
     ASSIGN = 5
-
+    CALL = 6,
+    TERNARY = 7
+    ARRAY = 8
 Node = namedtuple("Node", ["value",
                            "token",
                            "lineno"])
@@ -23,11 +25,14 @@ OP_LIST = [
     "+=",
     "-=",
     "*=",
-    "/="
+    ">",
+    "<",
+    ">=",
+    "<=",
 ]
 
 VARS_TABLE = {}
-MIN_ID_FOR_VARS = 16
+MIN_ID_FOR_VARS = 100
 
 class AST(object):
     def __init__(self):
@@ -46,11 +51,44 @@ class AST(object):
         elif isinstance(node, c_ast.ID):
             return self._parseID(node)
 
+        elif isinstance(node, c_ast.FuncCall):
+            return self._parseFuncCall(node)
+
+        elif isinstance(node, c_ast.TernaryOp):
+            return self._parseTernaryOp(node)
+
+        elif isinstance(node, c_ast.ArrayRef):
+            return self._parseArrayRef(node)
+
+        elif isinstance(node, c_ast.Cast):
+            from IPython import embed
+            embed()
+
         else:
             return self._parseConst(node)
 
     def _getLineno(self, coord):
         return coord.line
+
+    def _parseArrayRef(self, node):
+        return Node(value=[self._analyseNode(node.subscript)],
+                    token=Token.ARRAY,
+                    lineno=node.coord.line)
+
+    def _parseTernaryOp(self, node):
+        return Node( value=[
+                        self._analyseNode(node.cond),
+                        self._analyseNode(node.iftrue),
+                        self._analyseNode(node.iffalse)],
+                    token=Token.TERNARY,
+                    lineno=node.coord.line
+                )
+
+    def _parseFuncCall(self, node):
+        return Node( value=[self._analyseNode(n) for n in node.args.exprs],
+                    token=Token.CALL,
+                    lineno=node.coord.line)
+
 
     def _parseConst(self, node):
         return Node(value=[node.value],
@@ -121,25 +159,34 @@ class AST(object):
         return resp
 
 
+    def _parseFor(self, node):
+        resp = []
+        self.fors.append(node.coord.line)
+        for stmt in node.stmt.block_items:
+            if isinstance(stmt, c_ast.Assignment):
+                resp.append(self._parseAssignment(stmt))
+            elif isinstance(stmt, c_ast.For):
+                resp += self._parseFor(stmt)
+        return resp
+
     def parse(self, f):
         statements = []
         ast = parse_file(f, use_cpp=True,
                             cpp_path='clang',
-                            cpp_args=['-E', r'-I../utils/fake_libc_include'])
+                            cpp_args=['-E', r'-I/Users/joaosaffran/TCC/proj2/neuromp/utils/fake_libc_include'])
 
         for n in ast.ext:
             if isinstance(n, c_ast.FuncDef):
                 for node in n.body.block_items:
                     if isinstance(node, c_ast.For):
-                        self.fors.append(node.coord.line)
-                        for stmt in node.stmt.block_items:
-                            if isinstance(stmt, c_ast.Assignment):
-                                statements.append(self._parseAssignment(stmt))
+                        statements += self._parseFor(node)
         return statements
 
 if __name__ == "__main__":
     ast = AST()
     pp = pprint.PrettyPrinter(indent=4)
-    feats = ast.parse("../data/pi.c")
+    #feats = ast.parse("../data/pi.c")
+    feats = ast.parse("../data/CAPBenchmarks/x86/src/GF/gauss-filter.c")
+    #pp.pprint(feats)
     for f in feats:
         print(ast.preproStatement(f))

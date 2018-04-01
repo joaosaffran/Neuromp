@@ -6,9 +6,9 @@ from neuromp.preprocessing.code import Code
 from neuromp.model.greedySearch import GreedySearch
 
 ex = Experiment('Pi Gready Search')
-ex.observers.append(MongoObserver.create(
-    url='mongodb://joaosaffran:saffran96@ds247648.mlab.com:47648/joaosaffran_tcc',
-    db_name='joaosaffran_tcc'))
+#ex.observers.append(MongoObserver.create(
+#    url='mongodb://joaosaffran:saffran96@ds247648.mlab.com:47648/joaosaffran_tcc',
+#    db_name='joaosaffran_tcc'))
 
 @ex.config
 def config():

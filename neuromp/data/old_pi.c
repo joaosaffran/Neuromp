@@ -6,8 +6,7 @@ int main(int argc, char** argv){
     long long i;
     double x, pi, soma=0.0;
     passo = 1.0/(double)num_passos;
-    
-    #pragma omp parallel for private(x) reduction(+:soma)
+
     for(i=0; i < num_passos; i++){
         x = (i + 0.5)*passo;
         soma += 4.0/(1.0 + x*x);

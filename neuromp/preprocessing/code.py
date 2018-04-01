@@ -77,8 +77,8 @@ class Code(object):
 
     def getInput(self):
         resp = self.getEncodedPragma()
-        for s in self.statements:
-            resp += self.ast.preproStatement(s)
+        #for s in self.statements:
+        #    resp += self.ast.preproStatement(s)
         return np.array(resp)
 
     def runParallel(self):
@@ -167,7 +167,7 @@ class Code(object):
             return -1
 
     def reset(self):
-        self._initPragmas()
+        self.pragmas = self._initPragmas()
         return self.getInput()
 if __name__ == "__main__":
     c = Code('../data/pi.c')
