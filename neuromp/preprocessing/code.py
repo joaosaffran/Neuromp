@@ -93,10 +93,11 @@ class Code(object):
         try:
             subprocess.check_output(['gcc-7', '-Wall', '-Werror',
                     '-std=c99', '-O3','-fopenmp', 'tmp_par.c', '-o', 'tmp_par'],
-                    stderr=subprocess.PIPE, universal_newlines=True)
-        except subprocess.CalledProcessError as e:
+                    stderr=subprocess.STDOUT, universal_newlines=True)
+        except subprocess.CalledProcessError as exc:
             self.par_output = None
             self.par_time = 1000
+            print("Status : FAIL", exc.returncode, exc.output)
             return self.par_output, self.par_time
 
         b = time.time()

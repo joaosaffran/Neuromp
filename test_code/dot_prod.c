@@ -12,6 +12,7 @@ void init(double* p){
 int main(int argc, char** argv){
     double* a = malloc(N * sizeof(double)); 
     double* b = malloc(N * sizeof(double));
+    int i = 0;
 
     srand(42);
 
@@ -19,8 +20,9 @@ int main(int argc, char** argv){
     init(b);
 
     double resp = 0.0;
-#pragma omp parallel for reduction(+: resp)
-    for(int i = 0; i<N; i++)
+//#pragma omp parallel for reduction(+: resp)
+    for(i = 0; i<N; i++){
         resp += a[i] * b[i];
+    }
     printf("%f\n", resp);
 }

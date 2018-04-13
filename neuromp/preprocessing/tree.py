@@ -2,6 +2,7 @@ from pycparser import parse_file, c_ast
 from collections import namedtuple
 from enum import Enum
 import pprint
+from IPython import embed
 
 class Token(Enum):
     CONST = 1
@@ -61,9 +62,9 @@ class AST(object):
             return self._parseArrayRef(node)
 
         elif isinstance(node, c_ast.Cast):
-            from IPython import embed
-            embed()
-
+            return Node(value=['cast'],
+                        token=Token.CONST,
+                        lineno=node.coord.line)
         else:
             return self._parseConst(node)
 
@@ -85,9 +86,15 @@ class AST(object):
                 )
 
     def _parseFuncCall(self, node):
-        return Node( value=[self._analyseNode(n) for n in node.args.exprs],
-                    token=Token.CALL,
-                    lineno=node.coord.line)
+        if node.args != None:
+            return Node( value=[self._analyseNode(n) for n in node.args.exprs],
+                        token=Token.CALL,
+                        lineno=node.coord.line)
+        else:
+            return Node( value=[],
+                        token=Token.CALL,
+                        lineno=node.coord.line)
+
 
 
     def _parseConst(self, node):
@@ -161,6 +168,7 @@ class AST(object):
 
     def _parseFor(self, node):
         resp = []
+        #embed()
         self.fors.append(node.coord.line)
         for stmt in node.stmt.block_items:
             if isinstance(stmt, c_ast.Assignment):
@@ -177,9 +185,13 @@ class AST(object):
 
         for n in ast.ext:
             if isinstance(n, c_ast.FuncDef):
+                if n.decl.name != "main":
+                    continue
+
                 for node in n.body.block_items:
                     if isinstance(node, c_ast.For):
                         statements += self._parseFor(node)
+        print(statements)
         return statements
 
 if __name__ == "__main__":

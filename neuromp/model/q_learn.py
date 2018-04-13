@@ -2,7 +2,7 @@ import numpy as np
 from neuromp.preprocessing.code import Code, VarStates
 from itertools import product
 class QLearn():
-    def __init__(self, env, lr=.8, y=.95, num_episodes=100):
+    def __init__(self, env, lr=.8, y=.95, num_episodes=20):
         self.env = env
         self.lr = lr
         self.y = y
@@ -62,6 +62,7 @@ class QLearn():
         print(self.Q)
         print(self.env.best_pragma)
 if __name__ == "__main__":
-    q = QLearn(Code("../data/pi.c"))
+    import sys
+    q = QLearn(Code(sys.argv[1]))
     print(q.Q.shape)
     q.fit()
