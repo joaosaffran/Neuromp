@@ -37,23 +37,28 @@ int main(int argc, char** argv){
     char** mat = malloc(N * sizeof(char*));
     char** new_mat = malloc(N * sizeof(char*));
 
+    int num_neigh;
+    size_t i, j;
     init(mat);
     init(new_mat);
 
-    for(size_t i = 1; i< N-1; i++){
-        for(size_t j = 1; j<N-1; j++){
-            int num_neigh = calcNeigh(mat, i, j);        
+    for(i = 1; i< N-1; i++){
+        for(j = 1; j<N-1; j++){
+            num_neigh = calcNeigh(mat, i, j);        
 
             if(mat[i][j] == 1 && !(num_neigh == 2 || num_neigh == 3))
+            {
                 new_mat[i][j] = 0;
-            else
+            }else{
                 new_mat[i][j] = 1;
-
+            }
+            
             if(mat[i][j] == 0 && num_neigh == 3)
+            {
                 new_mat[i][j] = 1;
-            else
+            }else{
                 new_mat[i][j] = 0;
-
+            }
         }
     }
 

@@ -13,6 +13,8 @@ class Token(Enum):
     CALL = 6,
     TERNARY = 7
     ARRAY = 8
+    IF = 9
+    COMPOUND=10
 Node = namedtuple("Node", ["value",
                            "token",
                            "lineno"])
@@ -46,6 +48,7 @@ class AST(object):
         return sorted(list(self._variables))
 
     def _analyseNode(self, node):
+        #print(node)
         if isinstance(node, c_ast.BinaryOp):
             return self._parseBinOP(node)
 
@@ -65,6 +68,32 @@ class AST(object):
             return Node(value=['cast'],
                         token=Token.CONST,
                         lineno=node.coord.line)
+
+        elif isinstance(node, c_ast.Decl):
+            return Node(value=['decl'],
+                        token=Token.CONST,
+                        lineno=node.coord.line)
+
+        elif isinstance(node, c_ast.If):
+            return self._parseIf(node)
+
+        elif isinstance(node, c_ast.Compound):
+            return Node(value=[self._analyseNode(n) for n in node.block_items],
+                        token=Token.COMPOUND,
+                        lineno=node.coord.line)
+
+        elif isinstance(node, c_ast.Assignment):
+            return self._parseAssignment(node)
+
+        elif isinstance(node, c_ast.UnaryOp):
+            return Node(value=node.op,
+                        token=Token.OP,
+                        lineno=node.coord.line)
+
+        elif isinstance(node, c_ast.Break):
+            return Node(value='break',
+                        token=Token.OP,
+                        lineno=node.coord.line)
         else:
             return self._parseConst(node)
 
@@ -74,6 +103,20 @@ class AST(object):
     def _parseArrayRef(self, node):
         return Node(value=[self._analyseNode(node.subscript)],
                     token=Token.ARRAY,
+                    lineno=node.coord.line)
+
+    def _parseIf(self, node):
+        aux = []
+        aux.append(self._analyseNode(node.cond))
+
+        if node.iftrue != None:
+            aux.append(self._analyseNode(node.iftrue))
+
+        if node.iffalse != None:
+            aux.append(self._analyseNode(node.iffalse))
+
+        return Node(value=aux,
+                    token=Token.IF,
                     lineno=node.coord.line)
 
     def _parseTernaryOp(self, node):
@@ -170,9 +213,12 @@ class AST(object):
         resp = []
         #embed()
         self.fors.append(node.coord.line)
+        print(node.stmt.coord.line)
         for stmt in node.stmt.block_items:
             if isinstance(stmt, c_ast.Assignment):
                 resp.append(self._parseAssignment(stmt))
+            elif isinstance(stmt, c_ast.If):
+                resp += self._parseIf(stmt)
             elif isinstance(stmt, c_ast.For):
                 resp += self._parseFor(stmt)
         return resp
@@ -191,7 +237,10 @@ class AST(object):
                 for node in n.body.block_items:
                     if isinstance(node, c_ast.For):
                         statements += self._parseFor(node)
-        print(statements)
+                    elif isinstance(node, c_ast.While):
+                        for n in node.stmt.block_items:
+                            if isinstance(n, c_ast.For):
+                                statements += self._parseFor(n)
         return statements
 
 if __name__ == "__main__":

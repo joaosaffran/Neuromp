@@ -85,7 +85,7 @@ class Code(object):
         tmp_lines = deepcopy(self.lines)
 
         tmp_lines.insert(self.for_pos - 1, self._builtPragma())
-
+        #print(self._builtPragma())
         with open("tmp_par.c", "w") as f:
             for l in tmp_lines:
                 f.write(l + "\n")
@@ -95,9 +95,6 @@ class Code(object):
                     '-std=c99', '-O3','-fopenmp', 'tmp_par.c', '-o', 'tmp_par'],
                     stderr=subprocess.STDOUT, universal_newlines=True)
         except subprocess.CalledProcessError as exc:
-            self.par_output = None
-            self.par_time = 1000
-            print("Status : FAIL", exc.returncode, exc.output)
             return self.par_output, self.par_time
 
         b = time.time()
@@ -106,11 +103,14 @@ class Code(object):
                 universal_newlines=True,
                 stderr=subprocess.PIPE,
                 stdout=subprocess.PIPE)
-
-        self.par_output, error = p.communicate()
-        self.par_time = time.time() - b
-
-        self.par_output = self.par_output.rstrip()
+        try:
+            self.par_output, error = p.communicate(timeout=self.seq_time)
+            self.par_time = time.time() - b
+            self.par_output = self.par_output.rstrip()
+        except subprocess.TimeoutExpired as exc:
+            self.par_output = None
+            self.par_time = 1000
+            print("Status : TIMEOUT")
 
         return self.par_output, self.par_time
 

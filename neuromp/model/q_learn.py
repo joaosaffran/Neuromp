@@ -2,7 +2,7 @@ import numpy as np
 from neuromp.preprocessing.code import Code, VarStates
 from itertools import product
 class QLearn():
-    def __init__(self, env, lr=.8, y=.95, num_episodes=20):
+    def __init__(self, env, lr=.8, y=.95, num_episodes=100):
         self.env = env
         self.lr = lr
         self.y = y
@@ -34,7 +34,7 @@ class QLearn():
             rEp = []
             epLength = 0
 
-            for j in range(len(self.env.ast.variables)):
+            for j in range(len(self.env.ast.variables) * 10):
                 epLength += 1
                 a = np.argmax(self.Q[s,:] + np.random.randn(1,len(self.env.actions))*(1./(i+1)))
 

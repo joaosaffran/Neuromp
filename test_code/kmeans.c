@@ -19,8 +19,9 @@ double euclidean(double* x, double* y, size_t n){
 void init(double** vec, size_t n){
     for(size_t i = 0; i < n; i++){
         vec[i] = (double*)malloc(DIM * sizeof(double));
-        for(size_t j = 0; j < DIM; j++)
+        for(size_t j = 0; j < DIM; j++){
             vec[i][j] = rand() % 100;
+        }
     }
 }
 
@@ -36,52 +37,61 @@ int main(int argc, char** argv){
     init(points, N);
     init(centroids, K);
     
+    size_t i, j; 
+    double dist, point_dist;
+    int cluster;
+        
     while(changed){
         // Calculating Distances
         changed = 0;
         printf("RUNNING...\n");
-        
-        //#pragma omp parallel for
-        for(size_t point = 0; point< N; point++){
-            double dist = INFINITY;
-            int cluster = 0;
+//#pragma omp parallel for private(i, j, dist, cluster, point_dist)
+        for(i = 0; i< N; i++){
+            dist = 1000000;
+            cluster = 0;
             
-            for(size_t centroid = 0; centroid < K; centroid++){
-                double point_dist = euclidean(points[point], centroids[centroid], DIM);
+            for(j = 0; j < K; j++){
+                point_dist = euclidean(points[i], centroids[j], DIM);
 
                 if(point_dist < dist){
                     dist = point_dist;
-                    cluster = (int)centroid;
+                    cluster = (int)j;
                 }
             }
-            if(clusters[point] != cluster){
+            if(clusters[i] != cluster){
                 changed = changed || 1;
-                clusters[point] = cluster;
+                clusters[i] = cluster;
             }
         }
 
-        if(changed == 0)
+        if(changed == 0){
             break;
+        }
 
+        printf("1\n");
         //Averaging Centroids
-        for(size_t i = 0; i<K; i++){
+        for(i = 0; i<K; i++){
             counts[i] = 0;
-            for(size_t j = 0; j<DIM; j++){
+            for(j = 0; j<DIM; j++){
                 centroids[i][j] = 0.0;
             }
         }
-
-        for(size_t point = 0; point < N; point++){
-                int cluster = clusters[point];
+        printf("2\n");
+        for(i = 0; i < N; i++){
+                cluster = clusters[i];
                 counts[cluster]++;
 
-                for(size_t pos = 0; pos < DIM; pos++)
-                    centroids[cluster][pos] += points[point][pos];
+                for(j = 0; j < DIM; j++){
+                    centroids[cluster][j] += points[i][j];
+                }
         }
+        printf("3\n");
         
-        for(size_t centroid = 0; centroid < K; centroid++)
-            for(size_t pos = 0; pos < DIM; pos++)
-                centroids[centroid][pos] /= counts[centroid];
+        for(i = 0; i < K; i++){
+            for(j = 0; j < DIM; j++){
+                centroids[i][j] /= counts[i];
+            }
+        }
     } 
     for(size_t i = 0; i<K; i++){
         for(size_t j = 0; j<DIM; j++){
