@@ -1,0 +1,8 @@
+pi -> #pragma omp parallel for shared(j, passo) reduction(+:soma)
+mat_mult -> #pragma omp parallel for private(j) shared(k)
+mandelbot -> #pragma omp parallel for shared(c, i, j, z)
+dot_prod -> #pragma omp parallel for shared(i) reduction(+:resp)
+kmeans -> #pragma omp parallel for shared(changed, cluster, dist, i, j) reduction(+:point_dist)
+vec_add -> #pragma omp parallel for shared(a) private(i)
+gol -> #pragma omp parallel for shared(i, j, mat) private(num_neigh)
+gauss_filter -> #pragma omp parallel for shared(half, i, imgI, imgJ, imgsize, j, maskI, maskJ, pixel) private(masksize)
