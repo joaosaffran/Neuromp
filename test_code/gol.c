@@ -42,6 +42,8 @@ int main(int argc, char** argv){
     init(mat);
     init(new_mat);
 
+//#pragma omp parallel for shared(mat) private(i, j, num_neigh)
+//#pragma parallel
     for(i = 1; i< N-1; i++){
         for(j = 1; j<N-1; j++){
             num_neigh = calcNeigh(mat, i, j);        
@@ -62,5 +64,5 @@ int main(int argc, char** argv){
         }
     }
 
-    show(new_mat);
+//    show(new_mat);
 }

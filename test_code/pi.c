@@ -11,7 +11,10 @@ int main(int argc, char** argv){
     double pi, soma=0.0;
     passo = 1.0/(double)num_passos;
 
-    for(i=0; i < num_passos; i+=5){
+//#pragma omp parallel for shared(j, passo) reduction(+:soma)
+
+#pragma parallel 
+   for(i=0; i < num_passos; i+=5){
         for(j = i; j <= i + 5; j++){
             soma += calc((j + 0.5)*passo);
         }

@@ -27,7 +27,8 @@ int main (int argc, char *argv[])
     init(b, NCA, NCB);
     init(c, NRA, NCB);
 
-    //#pragma omp parallel for shared(j) private(k)
+#pragma omp parallel for private(i, j, k)
+//#pragma parallel
     for (i=0; i<NRA; i++){
         for(j=0; j<NCB; j++){       
             for (k=0; k<NCA; k++){
@@ -36,13 +37,13 @@ int main (int argc, char *argv[])
         }
     }
 
-    for (i=0; i<NRA; i++)
+/*    for (i=0; i<NRA; i++)
     {
         for (j=0; j<NCB; j++){ 
             printf("%6.2f   ", c[i][j]);
         }
         printf("\n"); 
-    }
+    }*/
 
 }
 

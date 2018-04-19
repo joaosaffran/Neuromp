@@ -44,8 +44,9 @@ int main(int argc, char** argv){
     while(changed){
         // Calculating Distances
         changed = 0;
-        printf("RUNNING...\n");
-//#pragma omp parallel for private(i, j, dist, cluster, point_dist)
+        //printf("RUNNING...\n");
+//#pragma omp parallel for private(i, j) shared(changed, cluster, dist) reduction(+:point_dist)
+#pragma parallel
         for(i = 0; i< N; i++){
             dist = 1000000;
             cluster = 0;
@@ -68,7 +69,7 @@ int main(int argc, char** argv){
             break;
         }
 
-        printf("1\n");
+        //printf("1\n");
         //Averaging Centroids
         for(i = 0; i<K; i++){
             counts[i] = 0;
@@ -76,7 +77,7 @@ int main(int argc, char** argv){
                 centroids[i][j] = 0.0;
             }
         }
-        printf("2\n");
+        //printf("2\n");
         for(i = 0; i < N; i++){
                 cluster = clusters[i];
                 counts[cluster]++;
@@ -85,7 +86,7 @@ int main(int argc, char** argv){
                     centroids[cluster][j] += points[i][j];
                 }
         }
-        printf("3\n");
+      //  printf("3\n");
         
         for(i = 0; i < K; i++){
             for(j = 0; j < DIM; j++){
@@ -93,10 +94,10 @@ int main(int argc, char** argv){
             }
         }
     } 
-    for(size_t i = 0; i<K; i++){
+ /*   for(size_t i = 0; i<K; i++){
         for(size_t j = 0; j<DIM; j++){
             printf(" %f ", centroids[i][j]);
         }
         printf("\n");
-    }
+    }*/
 }

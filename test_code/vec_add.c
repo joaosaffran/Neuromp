@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include <stdlib.h>
 
-#define N 500000000
+#define N 90000000
 
 void init(unsigned long* vec){
     for(unsigned long i = 0; i< N; i++){
@@ -18,7 +18,8 @@ int main(int argc, char** argv){
     srand(42);
     init(x);
     init(y);
-    
+//#pragma omp parallel for shared(a) private(i)    
+#pragma parallel
     for(i = 0; i< N; i++){
         y[i] += a * x[i];
     }
