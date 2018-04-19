@@ -89,7 +89,7 @@ int main(int argc, char **argv)
     i = 0; j = 0;
     half = imgsize >> 1;
 //#pragma omp parallel for shared(half, imgsize, pixel) private(masksize, imgI,imgJ,maskI,maskJ,i,j)
-#pragma parallel
+//#pragma parallel
     for (imgI = 0; imgI < imgsize; imgI++)
     {			
         for (imgJ = 0; imgJ < imgsize; imgJ++)

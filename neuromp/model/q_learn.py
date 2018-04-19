@@ -9,7 +9,7 @@ class QLearn():
         self.num_episodes = num_episodes
 
         self.states = {}
-
+        self.train_info = []
         self.Q = np.zeros([
                 len(list(product(list(VarStates), repeat=len(self.env.ast.variables)))),
                 len(env.actions)
@@ -48,6 +48,17 @@ class QLearn():
                 if d:
                     break
             rList.append(rAll)
+
+            aux_tupple = (
+                i,
+                self.num_episodes,
+                epLength,
+                sum(rList)/self.num_episodes,
+                max(rEp),
+                min(rEp),
+                rAll,
+                sum(rEp)/len(rEp))
+            self.train_info.append(aux_tupple)
 
             print("{}/{} len: {} glo_avg: {:.2f} max: {:.2f} min:{:.2f} all:{:.2f} ep_avg:{:.2f}".format(
                 i,
