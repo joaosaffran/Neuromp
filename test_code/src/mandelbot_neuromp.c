@@ -18,7 +18,6 @@ int main(int argc, char** argv){
     double z, c = 0.0;
 
     int depth = 80;
-//#pragma parallel
 #pragma omp parallel for shared(c, z) private(i, j)    
     for(i = 0; i < max_row; i++){
         for(j = 0; j< max_col; j++){

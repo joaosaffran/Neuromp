@@ -20,8 +20,6 @@ int main(int argc, char** argv){
     init(b);
 
     double resp = 0.0;
-#pragma omp parallel for private(i) reduction(+:resp)
-//#pragma parallel
     for(i = 0; i<N; i++){
         resp += a[i] * b[i];
     }

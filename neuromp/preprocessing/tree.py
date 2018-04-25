@@ -94,7 +94,11 @@ class AST(object):
             return Node(value='break',
                         token=Token.OP,
                         lineno=node.coord.line)
+        elif isinstance(node, c_ast.For):
+            return self._parseFor(node)
+
         else:
+            embed
             return self._parseConst(node)
 
     def _getLineno(self, coord):

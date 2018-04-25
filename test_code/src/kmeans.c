@@ -4,7 +4,7 @@
 
 #define K 3
 #define N 10000
-#define DIM 100
+#define DIM 1000
 
 double euclidean(double* x, double* y, size_t n){
     double resp = 0.0;
@@ -45,8 +45,6 @@ int main(int argc, char** argv){
         // Calculating Distances
         changed = 0;
         //printf("RUNNING...\n");
-//#pragma omp parallel for private(i, j) shared(changed, cluster, dist) reduction(+:point_dist)
-#pragma parallel
         for(i = 0; i< N; i++){
             dist = 1000000;
             cluster = 0;
@@ -86,7 +84,7 @@ int main(int argc, char** argv){
                     centroids[cluster][j] += points[i][j];
                 }
         }
-      //  printf("3\n");
+        //printf("3\n");
         
         for(i = 0; i < K; i++){
             for(j = 0; j < DIM; j++){

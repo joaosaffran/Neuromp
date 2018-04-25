@@ -24,9 +24,9 @@
     -par(neuromp): 0.258
 
 -gauss-filter.c
-    -seq: 2.549 
+    -seq: 2.549
     -par(icc): 1.362
-    -par(neuromp): 0.170
+    -par(neuromp): 1.295
 
 -dot_prod.c
     -seq: 2.553

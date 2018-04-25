@@ -120,7 +120,7 @@ class Code(object):
                 f.write(l + "\n")
 
         subprocess.check_output(['gcc-7', '-Wall', '-Werror',
-                '-std=c99', '-O3','tmp_seq.c', '-o', 'tmp_seq'],
+                '-std=c99', '-O0','tmp_seq.c', '-o', 'tmp_seq'],
                 stderr=subprocess.STDOUT, universal_newlines=True)
 
         b = time.time()

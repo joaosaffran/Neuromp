@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define N 5000 
+#define N 10000 
 
 void init(char** mat){
     for(size_t i = 0; i< N; i++){
@@ -42,8 +42,7 @@ int main(int argc, char** argv){
     init(mat);
     init(new_mat);
 
-//#pragma omp parallel for shared(mat) private(i, j, num_neigh)
-//#pragma parallel
+#pragma parallel
     for(i = 1; i< N-1; i++){
         for(j = 1; j<N-1; j++){
             num_neigh = calcNeigh(mat, i, j);        
