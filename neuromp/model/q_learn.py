@@ -1,15 +1,24 @@
 import numpy as np
 from neuromp.preprocessing.code import Code, VarStates
 from itertools import product
+from multiprocessing import cpu_count
+
+import time
+
 class QLearn():
-    def __init__(self, env, lr=.8, y=.95, num_episodes=100):
+    def __init__(self, env, lr=.8, y=.95, num_episodes=100, early_stop_min_speedup=0.35):
         self.env = env
         self.lr = lr
         self.y = y
         self.num_episodes = num_episodes
 
+        self.early_stop_min_speedup = cpu_count() * early_stop_min_speedup
+
         self.states = {}
         self.train_info = []
+        print(list(VarStates))
+        print(env.actions)
+        self.exec_time = 0.0
         self.Q = np.zeros([
                 len(list(product(list(VarStates), repeat=len(self.env.ast.variables)))),
                 len(env.actions)
@@ -22,8 +31,12 @@ class QLearn():
 
         return self.states[aux_s]
 
-    def fit(self):
+    def fit(self, ealy_stop_count=5):
         rList = []
+        last_mean_speedup = 0
+        stopped = ealy_stop_count
+
+        begin = time.time()
         for i in range(self.num_episodes):
             s = self.env.reset()
             #print(">> start {}".format(s))
@@ -34,7 +47,7 @@ class QLearn():
             rEp = []
             epLength = 0
 
-            for j in range(len(self.env.ast.variables) * 10):
+            for j in range(len(self.env.ast.variables)):
                 epLength += 1
                 a = np.argmax(self.Q[s,:] + np.random.randn(1,len(self.env.actions))*(1./(i+1)))
 
@@ -49,6 +62,8 @@ class QLearn():
                     break
             rList.append(rAll)
 
+            mean_speedup = sum(rEp)/len(rEp)
+
             aux_tupple = (
                 i,
                 self.num_episodes,
@@ -57,10 +72,23 @@ class QLearn():
                 max(rEp),
                 min(rEp),
                 rAll,
-                sum(rEp)/len(rEp))
+                mean_speedup)
             self.train_info.append(aux_tupple)
 
-            print("{}/{} len: {} glo_avg: {:.2f} max: {:.2f} min:{:.2f} all:{:.2f} ep_avg:{:.2f}".format(
+            if last_mean_speedup > 1.0\
+                    and mean_speedup > 1.0\
+                    and epLength == len(self.env.ast.variables):
+
+                stopped -= 1
+                if stopped == 0:
+                    break
+            else:
+                stopped = ealy_stop_count
+
+
+
+            last_mean_speedup = mean_speedup
+            print("{}/{} len: {} glo_avg: {:.2f} max: {:.2f} min:{:.2f} all:{:.2f} ep_avg:{:.2f} stopped: {}".format(
                 i,
                 self.num_episodes,
                 epLength,
@@ -68,9 +96,18 @@ class QLearn():
                 max(rEp),
                 min(rEp),
                 rAll,
-                sum(rEp)/len(rEp))
+                sum(rEp)/len(rEp),
+                stopped)
             )
-        print(self.Q)
+        all_time = time.time() - begin
+        self.exec_time = all_time - self.env.total_time
+
+        print("Total Execution time: {}".format(all_time))
+        print("Q-Learning time: {}".format(self.exec_time))
+        print("Code Execution time: {}".format(self.env.total_time))
+
+#        print(self.Q)
+
         print(self.env.best_pragma)
 if __name__ == "__main__":
     import sys

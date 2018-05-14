@@ -35,6 +35,8 @@ class Code(object):
         self.actions = list(product(self.ast.variables, list(VarStates)))
         self.runSequential()
 
+        self.total_time = self.seq_time
+
     def _getLines(self, code):
         resp = []
         with open(code) as f:
@@ -106,6 +108,7 @@ class Code(object):
         try:
             self.par_output, error = p.communicate(timeout=self.seq_time)
             self.par_time = time.time() - b
+            self.total_time += self.par_time
             self.par_output = self.par_output.rstrip()
         except subprocess.TimeoutExpired as exc:
             self.par_output = None
@@ -120,7 +123,7 @@ class Code(object):
                 f.write(l + "\n")
 
         subprocess.check_output(['gcc-7', '-Wall', '-Werror',
-                '-std=c99', '-O0','tmp_seq.c', '-o', 'tmp_seq'],
+                '-std=c99', '-O3','tmp_seq.c', '-o', 'tmp_seq'],
                 stderr=subprocess.STDOUT, universal_newlines=True)
 
         b = time.time()
@@ -158,6 +161,7 @@ class Code(object):
 
     def getReward(self):
         self.runParallel()
+
         if self.seq_output == self.par_output:
             s = self.speedUp()
             if s > 1.0:

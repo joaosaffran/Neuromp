@@ -4,7 +4,7 @@
 
 #define K 3
 #define N 10000
-#define DIM 1000
+#define DIM 10000
 
 double euclidean(double* x, double* y, size_t n){
     double resp = 0.0;

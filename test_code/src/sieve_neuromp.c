@@ -33,11 +33,13 @@ int main()
             // Update all multiples of p
             for (i=p*2; i<=n; i += p){
                 prime[i] = false;
+                
             }
         }
     }
 
     // count prime numbers
+#pragma omp parallel for reduction(+: primes)
     for (p=2; p<=n; p++){
         if (prime[p]){
             primes++;

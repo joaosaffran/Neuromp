@@ -1,0 +1,34 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 17.0.4.181 Build 20170411
+
+Compiler options: -std=c99 -O3 -parallel -par-threshold0 -qopt-report-phase=par -qopt-report:5 -o ./bin/pi_icc
+
+Begin optimization report for: main()
+
+    Report from: Auto-parallelization optimizations [par]
+
+
+LOOP BEGIN at ./src/pi_icc.c(13,4)
+   remark #17109: LOOP WAS AUTO-PARALLELIZED
+   remark #17101: parallel loop shared={ .2 } private={ } firstprivate={ num_passos x passo i } lastprivate={ } firstlastprivate={ } reduction={ soma }
+LOOP END
+
+LOOP BEGIN at ./src/pi_icc.c(13,4)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at ./src/pi_icc.c(13,4)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at ./src/pi_icc.c(13,4)
+   remark #25460: No loop optimizations reported
+LOOP END
+
+LOOP BEGIN at ./src/pi_icc.c(13,4)
+<Remainder loop for vectorization>
+LOOP END
+===========================================================================

@@ -1,0 +1,207 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 17.0.4.181 Build 20170411
+
+Compiler options: -std=c99 -parallel -par-threshold0 -qopt-report-phase=par -qopt-report:5 -o mat_mult_icc
+
+Begin optimization report for: main(int, char **)
+
+    Report from: Auto-parallelization optimizations [par]
+
+
+LOOP BEGIN at mat_mult.c(9,5) inlined into mat_mult.c(26,5)
+   remark #17104: loop was not parallelized: existence of parallel dependence
+   remark #17106: parallel dependence: assumed OUTPUT dependence between mat[_i][_j] (12:13) and mat[_i][_j] (12:13)
+   remark #17106: parallel dependence: assumed OUTPUT dependence between mat[_i][_j] (12:13) and mat[_i][_j] (12:13)
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(26,5)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(26,5)
+      remark #17109: LOOP WAS AUTO-PARALLELIZED
+      remark #17101: parallel loop shared={ } private={ } firstprivate={ mat _j _i } lastprivate={ } firstlastprivate={ } reduction={ }
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(26,5)
+   <Remainder loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(26,5)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mat_mult.c(9,5) inlined into mat_mult.c(27,5)
+   remark #17104: loop was not parallelized: existence of parallel dependence
+   remark #17106: parallel dependence: assumed OUTPUT dependence between mat[_i][_j] (12:13) and mat[_i][_j] (12:13)
+   remark #17106: parallel dependence: assumed OUTPUT dependence between mat[_i][_j] (12:13) and mat[_i][_j] (12:13)
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(27,5)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(27,5)
+      remark #17109: LOOP WAS AUTO-PARALLELIZED
+      remark #17101: parallel loop shared={ } private={ } firstprivate={ mat _j _i } lastprivate={ } firstlastprivate={ } reduction={ }
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(27,5)
+   <Remainder loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(27,5)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mat_mult.c(9,5) inlined into mat_mult.c(28,5)
+   remark #17104: loop was not parallelized: existence of parallel dependence
+   remark #17106: parallel dependence: assumed OUTPUT dependence between mat[_i][_j] (12:13) and mat[_i][_j] (12:13)
+   remark #17106: parallel dependence: assumed OUTPUT dependence between mat[_i][_j] (12:13) and mat[_i][_j] (12:13)
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(28,5)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(28,5)
+      remark #17109: LOOP WAS AUTO-PARALLELIZED
+      remark #17101: parallel loop shared={ } private={ } firstprivate={ mat _j _i } lastprivate={ } firstlastprivate={ } reduction={ }
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(28,5)
+   <Remainder loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(28,5)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mat_mult.c(32,5)
+   remark #17109: LOOP WAS AUTO-PARALLELIZED
+   remark #17101: parallel loop shared={ } private={ } firstprivate={ k j mat mat mat i } lastprivate={ } firstlastprivate={ } reduction={ }
+
+   LOOP BEGIN at mat_mult.c(33,9)
+      remark #25460: No loop optimizations reported
+
+      LOOP BEGIN at mat_mult.c(34,13)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at mat_mult.c(34,13)
+         remark #25460: No loop optimizations reported
+      LOOP END
+
+      LOOP BEGIN at mat_mult.c(34,13)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at mat_mult.c(34,13)
+      <Remainder loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at mat_mult.c(34,13)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(26,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(26,5)
+   remark #25460: No loop optimizations reported
+LOOP END
+
+LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(26,5)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(27,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(27,5)
+   remark #25460: No loop optimizations reported
+LOOP END
+
+LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(27,5)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(28,5)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(28,5)
+   remark #25460: No loop optimizations reported
+LOOP END
+
+LOOP BEGIN at mat_mult.c(11,9) inlined into mat_mult.c(28,5)
+<Remainder loop for vectorization>
+LOOP END
+
+LOOP BEGIN at mat_mult.c(32,5)
+   remark #25460: No loop optimizations reported
+
+   LOOP BEGIN at mat_mult.c(33,9)
+      remark #17104: loop was not parallelized: existence of parallel dependence
+      remark #17106: parallel dependence: assumed OUTPUT dependence between mat[i][j] (35:17) and mat[i][j] (35:17)
+      remark #17106: parallel dependence: assumed OUTPUT dependence between mat[i][j] (35:17) and mat[i][j] (35:17)
+
+      LOOP BEGIN at mat_mult.c(34,13)
+      <Peeled loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at mat_mult.c(34,13)
+         remark #17107: loop was not parallelized: inner loop
+      LOOP END
+
+      LOOP BEGIN at mat_mult.c(34,13)
+      <Alternate Alignment Vectorized Loop>
+      LOOP END
+
+      LOOP BEGIN at mat_mult.c(34,13)
+      <Remainder loop for vectorization>
+      LOOP END
+
+      LOOP BEGIN at mat_mult.c(34,13)
+      <Remainder loop for vectorization>
+      LOOP END
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: init(double **, int, int)
+
+    Report from: Auto-parallelization optimizations [par]
+
+
+LOOP BEGIN at mat_mult.c(9,5)
+   remark #17104: loop was not parallelized: existence of parallel dependence
+   remark #17106: parallel dependence: assumed FLOW dependence between call:malloc(size_t) (10:18) and mat[i] (12:13)
+   remark #17106: parallel dependence: assumed ANTI dependence between mat[i] (12:13) and call:malloc(size_t) (10:18)
+
+   LOOP BEGIN at mat_mult.c(11,9)
+   <Peeled loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9)
+      remark #17104: loop was not parallelized: existence of parallel dependence
+      remark #17106: parallel dependence: assumed OUTPUT dependence between mat[i][j] (12:13) and mat[i][j] (12:13)
+      remark #17106: parallel dependence: assumed OUTPUT dependence between mat[i][j] (12:13) and mat[i][j] (12:13)
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9)
+   <Remainder loop for vectorization>
+   LOOP END
+
+   LOOP BEGIN at mat_mult.c(11,9)
+   <Remainder loop for vectorization>
+   LOOP END
+LOOP END
+===========================================================================

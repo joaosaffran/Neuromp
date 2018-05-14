@@ -1,0 +1,40 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+Intel(R) C Intel(R) 64 Compiler for applications running on Intel(R) 64, Version 17.0.4.181 Build 20170411
+
+Compiler options: -std=c99 -O3 -parallel -par-threshold0 -qopt-report-phase=par -qopt-report:5 -o ./bin/cout_prime_icc
+
+Begin optimization report for: main()
+
+    Report from: Auto-parallelization optimizations [par]
+
+
+LOOP BEGIN at ./src/cout_prime_icc.c(28,3)
+   remark #17109: LOOP WAS AUTO-PARALLELIZED
+   remark #17101: parallel loop shared={ } private={ } firstprivate={ _d num _max_divisor n } lastprivate={ } firstlastprivate={ } reduction={ soma }
+
+   LOOP BEGIN at ./src/cout_prime_icc.c(12,9) inlined into ./src/cout_prime_icc.c(29,18)
+      remark #25460: No loop optimizations reported
+   LOOP END
+LOOP END
+
+LOOP BEGIN at ./src/cout_prime_icc.c(28,3)
+   remark #25460: No loop optimizations reported
+
+   LOOP BEGIN at ./src/cout_prime_icc.c(12,9) inlined into ./src/cout_prime_icc.c(29,18)
+      remark #25460: No loop optimizations reported
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: primo(long)
+
+    Report from: Auto-parallelization optimizations [par]
+
+
+LOOP BEGIN at ./src/cout_prime_icc.c(12,9)
+   remark #17104: loop was not parallelized: existence of parallel dependence
+LOOP END
+===========================================================================
