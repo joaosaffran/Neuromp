@@ -6,7 +6,7 @@ from multiprocessing import cpu_count
 import time
 
 class QLearn():
-    def __init__(self, env, lr=.8, y=.95, num_episodes=100, early_stop_min_speedup=0.35):
+    def __init__(self, env, lr=.8, y=.95, num_episodes=1000, early_stop_min_speedup=0.8):
         self.env = env
         self.lr = lr
         self.y = y

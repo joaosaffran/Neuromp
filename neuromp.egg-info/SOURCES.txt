@@ -1,3 +1,4 @@
+README.md
 neuromp/__init__.py
 neuromp.egg-info/PKG-INFO
 neuromp.egg-info/SOURCES.txt

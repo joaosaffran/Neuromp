@@ -34,8 +34,8 @@ void show(char** mat){
 }
 
 int main(int argc, char** argv){
-    char** mat = malloc(N * sizeof(char*));
-    char** new_mat = malloc(N * sizeof(char*));
+    char** mat = (char**)malloc(N * sizeof(char*));
+    char** new_mat = (char**)malloc(N * sizeof(char*));
 
     int num_neigh;
     size_t i, j;

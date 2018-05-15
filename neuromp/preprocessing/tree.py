@@ -2,7 +2,6 @@ from pycparser import parse_file, c_ast
 from collections import namedtuple
 from enum import Enum
 import pprint
-from IPython import embed
 
 class Token(Enum):
     CONST = 1
@@ -15,6 +14,8 @@ class Token(Enum):
     ARRAY = 8
     IF = 9
     COMPOUND=10
+    GOTO=11
+
 Node = namedtuple("Node", ["value",
                            "token",
                            "lineno"])
@@ -97,8 +98,15 @@ class AST(object):
         elif isinstance(node, c_ast.For):
             return self._parseFor(node)
 
+        elif isinstance(node, c_ast.Goto):
+            return Node(value='GOTO',
+                        token=Token.GOTO,
+                        lineno=node.coord.line)
+        elif isinstance(node, c_ast.Label):
+            return Node(value=[self._analyseNode(node.stmt)],
+                        token=Token.OP,
+                        lineno=node.coord.line)
         else:
-            embed
             return self._parseConst(node)
 
     def _getLineno(self, coord):
@@ -215,7 +223,6 @@ class AST(object):
 
     def _parseFor(self, node):
         resp = []
-        #embed()
         self.fors.append(node.coord.line)
         print(node.stmt.coord.line)
         for stmt in node.stmt.block_items:
@@ -225,33 +232,49 @@ class AST(object):
                 resp += self._parseIf(stmt)
             elif isinstance(stmt, c_ast.For):
                 resp += self._parseFor(stmt)
+            elif isinstance(stmt, c_ast.While):
+                resp.append(self._parseBinOP(stmt.cond))
+                resp.append(Node(value=[self._analyseNode(n) for n in stmt.stmt.block_items],
+                        token=Token.COMPOUND,
+                        lineno=node.coord.line))
+
         return resp
 
     def parse(self, f):
         statements = []
+        can_parse = False
         ast = parse_file(f, use_cpp=True,
-                            cpp_path='clang',
-                            cpp_args=['-E', r'-I/Users/joaosaffran/TCC/proj2/neuromp/utils/fake_libc_include'])
+                            cpp_path='g++',
+                            cpp_args=['-E', r'-I/home/parallels/Neuromp/neuromp/utils/fake_libc_include'])
 
         for n in ast.ext:
             if isinstance(n, c_ast.FuncDef):
-                if n.decl.name != "main":
-                    continue
-
                 for node in n.body.block_items:
-                    if isinstance(node, c_ast.For):
+
+                    if isinstance(node, c_ast.Pragma):
+                        if node.string == "neuromp":
+                            can_parse = True
+
+                    if isinstance(node, c_ast.For) and can_parse:
+                        can_parse = False
                         statements += self._parseFor(node)
+
                     elif isinstance(node, c_ast.While):
                         for n in node.stmt.block_items:
+                            if isinstance(node, c_ast.Pragma):
+                                if node.string == "pragma neuromp":
+                                    can_parse = True
+
                             if isinstance(n, c_ast.For):
+                                can_parse = False
                                 statements += self._parseFor(n)
         return statements
 
 if __name__ == "__main__":
     ast = AST()
     pp = pprint.PrettyPrinter(indent=4)
-    #feats = ast.parse("../data/pi.c")
-    feats = ast.parse("../data/CAPBenchmarks/x86/src/GF/gauss-filter.c")
-    #pp.pprint(feats)
+    feats = ast.parse("../data/old_pi.c")
+    #feats = ast.parse("../data/CAPBenchmarks/x86/src/GF/gauss-filter.c")
+    pp.pprint(feats)
     for f in feats:
         print(ast.preproStatement(f))

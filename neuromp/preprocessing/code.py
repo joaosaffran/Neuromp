@@ -1,5 +1,5 @@
 from neuromp.preprocessing.tree import AST
-from enum import IntEnum, auto
+from enum import IntEnum
 from itertools import product
 import subprocess
 import time
@@ -7,9 +7,9 @@ import numpy as np
 from copy import deepcopy
 
 class VarStates(IntEnum):
-    SHARED = auto()
-    PRIVATE = auto()
-    REDUCTION = auto()
+    SHARED = 1
+    PRIVATE = 2
+    REDUCTION = 3
 
 class Code(object):
     def __init__(self, code):
@@ -90,13 +90,17 @@ class Code(object):
         #print(self._builtPragma())
         with open("tmp_par.c", "w") as f:
             for l in tmp_lines:
-                f.write(l + "\n")
+                if l != "#pragma neuromp":
+                    f.write(l + "\n")
 
         try:
-            subprocess.check_output(['gcc-7', '-Wall', '-Werror',
-                    '-std=c99', '-O3','-fopenmp', 'tmp_par.c', '-o', 'tmp_par'],
+            #gcc fast.c main.c -Wall -Wextra -O3 -I ../../include/ ../../lib/libcapb.a -lm -fopenmp
+            subprocess.check_output(['gcc', 'tmp_par.c', 'main.c', '-O3', '-I', '/home/parallels/CAPBenchmarks/x86/include/', '/home/parallels/CAPBenchmarks/x86/lib/libcapb.a', '-lm', '-fopenmp', '-o', 'tmp_par'],
                     stderr=subprocess.STDOUT, universal_newlines=True)
-        except subprocess.CalledProcessError as exc:
+        except subprocess.CalledProcessError as e:
+            print("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
+            self.par_output = None
+            self.par_time = 1000
             return self.par_output, self.par_time
 
         b = time.time()
@@ -120,12 +124,13 @@ class Code(object):
     def runSequential(self):
         with open("tmp_seq.c", "w") as f:
             for l in self.lines:
-                f.write(l + "\n")
-
-        subprocess.check_output(['gcc-7', '-Wall', '-Werror',
-                '-std=c99', '-O3','tmp_seq.c', '-o', 'tmp_seq'],
+                if l != "#pragma neuromp":
+                    f.write(l + "\n")
+        try:
+            subprocess.check_output(['gcc', 'tmp_seq.c', 'main.c', '-O3', '-I', '/home/parallels/CAPBenchmarks/x86/include/', '/home/parallels/CAPBenchmarks/x86/lib/libcapb.a', '-lm', '-o', 'tmp_seq'],
                 stderr=subprocess.STDOUT, universal_newlines=True)
-
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
         b = time.time()
         p = subprocess.Popen(['./tmp_seq'],
                 universal_newlines=True,
