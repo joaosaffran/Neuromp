@@ -1,0 +1,1 @@
+FAST -> #pragma omp parallel for shared(imgsize) private(j, accumBrighter, imagePixel, z, y) reduction(+:accumDarker, x, r, i, centralPixel)
