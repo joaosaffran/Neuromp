@@ -47,7 +47,7 @@ class QLearn():
             rEp = []
             epLength = 0
 
-            for j in range(len(self.env.ast.variables)):
+            for j in range(10 * len(self.env.ast.variables)):
                 epLength += 1
                 a = np.argmax(self.Q[s,:] + np.random.randn(1,len(self.env.actions))*(1./(i+1)))
 
@@ -84,8 +84,6 @@ class QLearn():
                     break
             else:
                 stopped = ealy_stop_count
-
-
 
             last_mean_speedup = mean_speedup
             print("{}/{} len: {} glo_avg: {:.2f} max: {:.2f} min:{:.2f} all:{:.2f} ep_avg:{:.2f} stopped: {}".format(
