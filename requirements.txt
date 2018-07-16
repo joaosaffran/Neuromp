@@ -1,1 +1,3 @@
+-e git+git@github.com:joaosaffran/Neuromp.git@282e4392764e27885bdb53a652deb71914ffdb78#egg=neuromp
+numpy==1.14.5
 pycparser==2.18
