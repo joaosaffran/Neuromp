@@ -95,7 +95,7 @@ class Code(object):
 
         try:
             #gcc fast.c main.c -Wall -Wextra -O3 -I ../../include/ ../../lib/libcapb.a -lm -fopenmp
-            subprocess.check_output(['gcc', 'tmp_par.c', 'main.c', '-O3', '-I', '/home/parallels/CAPBenchmarks/x86/include/', '/home/parallels/CAPBenchmarks/x86/lib/libcapb.a', '-lm', '-fopenmp', '-o', 'tmp_par'],
+            subprocess.check_output(['gcc', 'tmp_par.c', '-O3', '-lm', '-fopenmp', '-o', 'tmp_par'],
                     stderr=subprocess.STDOUT, universal_newlines=True)
         except subprocess.CalledProcessError as e:
             print("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
@@ -127,7 +127,7 @@ class Code(object):
                 if l != "#pragma neuromp":
                     f.write(l + "\n")
         try:
-            subprocess.check_output(['gcc', 'tmp_seq.c', 'main.c', '-O3', '-I', '/home/parallels/CAPBenchmarks/x86/include/', '/home/parallels/CAPBenchmarks/x86/lib/libcapb.a', '-lm', '-fopenmp', '-o', 'tmp_seq'],
+            subprocess.check_output(['gcc', 'tmp_seq.c', '-O3', '-lm', '-fopenmp', '-o', 'tmp_seq'],
                 stderr=subprocess.STDOUT, universal_newlines=True)
         except subprocess.CalledProcessError as e:
             raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))

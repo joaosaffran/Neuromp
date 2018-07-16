@@ -245,7 +245,7 @@ class AST(object):
         can_parse = False
         ast = parse_file(f, use_cpp=True,
                             cpp_path='g++',
-                            cpp_args=['-E', r'-I/home/parallels/Neuromp/neuromp/utils/fake_libc_include'])
+                            cpp_args=['-E', r'-I../utils/fake_libc_include'])
 
         for n in ast.ext:
             if isinstance(n, c_ast.FuncDef):

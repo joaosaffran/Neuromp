@@ -1,8 +1,0 @@
-FAST -> #pragma omp parallel for shared(imgsize) private(j, accumBrighter, imagePixel, z, y) reduction(+:accumDarker, x, r, i, centralPixel)
-FN -> #pragma omp parallel for shared(start, n, tid) private(j, i)
-KM -> #pragma omp parallel for reduction(+:tid, population) private(i, j)
-GF -> #pragma omp parallel for shared(half, imgsize, masksize) private(pixel, imgI,imgJ,maskI,maskJ,i,j)
-LU -> #pragma omp parallel private(jpvt, j0, ipvt, i0, i) shared(pipvt, j, pjpvt)
-NB -> #pragma omp parallel for shared(a2, a1, a0, zi, yi) private(i, xi)
-IS -> pragma omp parallel reduction(+:_max, max) shared(range, i, k) private(j)
-RT -> #pragma omp parallel for shared(img, invheight, spheres, yy, pixel, xx, invwidth, x, angle, aspectratio, raydir, nspheres, y)
